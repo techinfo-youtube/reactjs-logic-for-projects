@@ -3,6 +3,7 @@ import Pages from "./components/Pages";
 
 function App() {
   const [data, setData] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
   //getting posts
   useEffect(() => {
     const paginationFunc = async () => {
@@ -14,7 +15,18 @@ function App() {
     paginationFunc();
   }, []);
   return (
-    <>{data && data.length > 0 ? <Pages data={data} /> : <p>Loading...</p>}</>
+    <>
+      <div className={darkMode ? "dark-mode" : "light-mode"}>
+        <div className="switch-container">
+          <label className="switch">
+            <input type="checkbox" onChange={() => setDarkMode(!darkMode)} />
+            <span className="slider round" />
+          </label>
+          <label className="switch-label">{darkMode ? "Dark" : "Light"}</label>
+        </div>
+        {data && data.length > 0 ? <Pages data={data} /> : <p>Loading...</p>}
+      </div>
+    </>
   );
 }
 
