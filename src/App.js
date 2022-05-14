@@ -1,20 +1,44 @@
 import { useState, useEffect } from "react";
-import Pages from "./components/Pages";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
+import Auth from "./pages/Auth";
 
 function App() {
-  const [data, setData] = useState([]);
-  //getting posts
+  const [user, setUser] = useState(null);
+
+  //useeffect for getuser
   useEffect(() => {
-    const paginationFunc = async () => {
-      const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-      const data = await res.json();
-      setData(data);
-      console.log(data);
-    };
-    paginationFunc();
+    const u = localStorage.getItem("user");
+    u && JSON.parse(u) ? setUser(true) : setUser(false);
   }, []);
+
+  //useeffect for set user
+  useEffect(() => {
+    localStorage.setItem("user", user);
+  }, [user]);
+  const handleLogout = () => {
+    setUser(false);
+  };
   return (
-    <>{data && data.length > 0 ? <Pages data={data} /> : <p>Loading...</p>}</>
+    <>
+      <Routes>
+        {!user && (
+          <Route path="/" element={<Auth auth={() => setUser(true)} />} />
+        )}
+
+        {user && (
+          <>
+            <Route
+              path="/profile"
+              element={<Profile handleLogout={handleLogout} />}
+            />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </>
+        )}
+        <Route path="*" element={<Navigate to={user ? "/profile" : "/"} />} />
+      </Routes>
+    </>
   );
 }
 
